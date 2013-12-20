@@ -1,0 +1,3 @@
+f2f:>/Applications/Blender/blender.app/Contents/MacOS/2.66/scripts/addons/alt.py:=/Users/masakazu/Visual Studio Online/Blender Script/alt.py
+#f2d:>/Applications/Blender/blender.app/Contents/MacOS/2.66/scripts/addons/:=/Users/masakazu/Visual Studio Online/Blender Script/alt.py
+d2d:>/Users/masakazu/test:=/Users/masakazu/Visual Studio Online/Blender Script/
