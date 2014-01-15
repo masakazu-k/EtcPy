@@ -12,11 +12,13 @@ import os
 import shutil
 import sys
 def f2f_copy(ff,tf,onlynew):
-    print('ファイル"%s"を"%s"にコピー'%(ff,tf))
     if onlynew == False:
+        print('ファイル"%s"を"%s"にコピー'%(ff,tf))
         shutil.copyfile(ff,tf)
     else:
-        shutil.copyfile(ff,tf)
+        if(os.stat(ff) > os.stat(tf)):
+            print('ファイル"%s"を"%s"にコピー'%(ff,tf))
+            shutil.copyfile(ff,tf)
 
 def f2d_copy(ff,td,onlynew,mkdir):
     f = ff.split('/')
