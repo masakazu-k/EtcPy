@@ -12,11 +12,11 @@ import os
 import shutil
 import sys
 def f2f_copy(ff,tf,onlynew):
-    if onlynew == False:
+    if (onlynew == False) or (not os.path.exists(tf)):
         print('ファイル"%s"を"%s"にコピー'%(ff,tf))
         shutil.copyfile(ff,tf)
     else:
-        if(os.stat(ff) > os.stat(tf)):
+        if(os.stat(ff).st_mtime > os.stat(tf).st_mtime):
             print('ファイル"%s"を"%s"にコピー'%(ff,tf))
             shutil.copyfile(ff,tf)
 
