@@ -33,9 +33,9 @@ def f2d_copy(ff,td,onlynew,mkdir):
     f2f_copy(ff,tf,onlynew)
 
 def d2d_copy(fd,td,onlynew,mkdir):
-    if td[len(v[0])-1] != '/':
+    if td[len(td)-1] != '/':
         td = td + '/'
-    if fd[len(v[0])-1] != '/':
+    if fd[len(fd)-1] != '/':
         fd = fd + '/'
     fdl = os.listdir(fd)
     for ft in fdl:
@@ -66,14 +66,14 @@ def f2d_delete(ff,td,rmdir):
     tf = td + f
     f2f_delete(ff,tf)
     if rmdir and (len(os.listdir(td))==0):
-        #からのディレクトリなら削除
+        #空のディレクトリなら削除
         print('ディレクトリ"%s"を削除'%(td))
         os.rmdir(td)
 
 def d2d_delete(fd,td,rmdir):
-    if td[len(v[0])-1] != '/':
+    if td[len(td)-1] != '/':
         td = td + '/'
-    if fd[len(v[0])-1] != '/':
+    if fd[len(fd)-1] != '/':
         fd = fd + '/'
     fdl = os.listdir(fd)
     for ft in fdl:
@@ -138,14 +138,13 @@ if __name__=='__main__':
         if len(v[0])>0 and len(v[1])>0:
             v[1] = v[1].strip('\n')
             if t=='f2f' and f2f_flag and cpy_flag:
-                print('ファイル"%s"を"%s"にコピー'%(v[1],v[0]))
                 f2f_copy(v[1],v[0],oln_flag)
             elif t=='f2d' and f2d_flag and cpy_flag:
-                print('ファイル"%s"をディレクトリ"%s"にコピー'%(v[1],v[0]))
                 f2d_copy(v[1],v[0],oln_flag,mkd_flag)
             elif t=='d2d' and d2d_flag and cpy_flag:
                 print('ディレクトリ"%s"の内容をディレクトリ"%s"にコピー'%(v[1],v[0]))
                 d2d_copy(v[1],v[0],oln_flag,mkd_flag)
+
             elif t=='f2f' and f2f_flag and not cpy_flag:
                 f2f_delete(v[1],v[0])
             elif t=='f2d' and f2d_flag and not cpy_flag:
