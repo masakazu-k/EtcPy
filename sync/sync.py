@@ -61,7 +61,11 @@ if __name__=='__main__':
                 shutil.copy(v[1],v[0])
             elif t=='d2d' and d2d_flag and cpy_flag:
                 print('ディレクトリ"%s"の内容をディレクトリ"%s"にコピー'%(v[1],v[0]))
-                shutil.copytree(v[1],v[0])
+                if os.path.isdir(v[0]):
+                    shutil.rmtree(v[0])
+                    shutil.copytree(v[1],v[0])
+                else:
+                    shutil.copytree(v[1],v[0])
             elif t=='f2f' and f2f_flag and not cpy_flag:
                 print('"%s"を削除'%(v[0]))
                 os.remove(v[0])
