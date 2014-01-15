@@ -11,12 +11,90 @@
 import os
 import shutil
 import sys
+def f2f_copy(ff,tf,onlynew):
+    print('ファイル"%s"を"%s"にコピー'%(ff,tf))
+    if onlynew == False:
+        shutil.copyfile(ff,tf)
+    else:
+        shutil.copyfile(ff,tf)
+
+def f2d_copy(ff,td,onlynew,mkdir):
+    f = ff.split('/')
+    f = f[len(f)-1]
+    if td[len(td)-1] != '/':
+        td = td + '/'
+    if( not os.path.exists(td) ):
+        if mkdir:
+            print('ディレクトリ"%s"を作成'%(td))
+            os.mkdir(td)
+        else:
+            return
+    tf = td + f
+    f2f_copy(ff,tf,onlynew)
+
+def d2d_copy(fd,td,onlynew,mkdir):
+    if td[len(v[0])-1] != '/':
+        td = td + '/'
+    if fd[len(v[0])-1] != '/':
+        fd = fd + '/'
+    fdl = os.listdir(fd)
+    for ft in fdl:
+        ff = fd + ft
+        tf = td + ft
+        if os.path.isfile(ff):
+            #コピー元がファイルだった場合
+            f2d_copy(ff,td,onlynew,mkdir)
+        elif os.path.isdir(ff):
+            #コピー元がディレクトリだった場合
+            d2d_copy(ff,tf,onlynew,mkdir)
+
+def f2f_delete(ff,tf):
+    if os.path.exists(tf) and os.path.isfile(tf):
+        print('ファイル"%s"を削除'%(tf))
+        os.remove(tf)
+    else:
+        print('ファイル"%s"が存在しません'%(tf))
+
+def f2d_delete(ff,td,rmdir):
+    f = ff.split('/')
+    f = f[len(f)-1]
+    if td[len(td)-1] != '/':
+        td = td + '/'
+    if( not os.path.exists(td) ):
+        print('ディレクトリ"%s"が存在しません'%(td))
+        return
+    tf = td + f
+    f2f_delete(ff,tf)
+    if rmdir and (len(os.listdir(td))==0):
+        #からのディレクトリなら削除
+        print('ディレクトリ"%s"を削除'%(td))
+        os.rmdir(td)
+
+def d2d_delete(fd,td,rmdir):
+    if td[len(v[0])-1] != '/':
+        td = td + '/'
+    if fd[len(v[0])-1] != '/':
+        fd = fd + '/'
+    fdl = os.listdir(fd)
+    for ft in fdl:
+        ff = fd + ft
+        tf = td + ft
+        if os.path.isfile(ff):
+            #コピー元がファイルだった場合
+            f2d_delete(ff,td,rmdir)
+        elif os.path.isdir(ff):
+            #コピー元がディレクトリだった場合
+            d2d_delete(ff,tf,rmdir)
+
 if __name__=='__main__':
     argvs = sys.argv
     f2f_flag = True
     f2d_flag = True
     d2d_flag = True
     cpy_flag = True
+    oln_flag = False
+    mkd_flag = True
+    red_flag = True
     cfile     = os.environ['HOME']+'/list.txt'
     if len(argvs) > 1:
         for r in argvs:
@@ -28,6 +106,12 @@ if __name__=='__main__':
                 d2d_flag = False
             elif r =='del':
                 cpy_flag = False
+            elif r =='onlynew':
+                oln_flag = True
+            elif r =='nmkdir':
+                mkd_flag = False
+            elif r =='nrmdir':
+                red_flag = False
             elif r[0:5] =='conf=':
                 r = r.split('=')
                 r = r[1]
@@ -55,38 +139,20 @@ if __name__=='__main__':
             v[1] = v[1].strip('\n')
             if t=='f2f' and f2f_flag and cpy_flag:
                 print('ファイル"%s"を"%s"にコピー'%(v[1],v[0]))
-                shutil.copyfile(v[1],v[0])
+                f2f_copy(v[1],v[0],oln_flag)
             elif t=='f2d' and f2d_flag and cpy_flag:
                 print('ファイル"%s"をディレクトリ"%s"にコピー'%(v[1],v[0]))
-                shutil.copy(v[1],v[0])
+                f2d_copy(v[1],v[0],oln_flag,mkd_flag)
             elif t=='d2d' and d2d_flag and cpy_flag:
                 print('ディレクトリ"%s"の内容をディレクトリ"%s"にコピー'%(v[1],v[0]))
-                if os.path.isdir(v[0]):
-                    shutil.rmtree(v[0])
-                    shutil.copytree(v[1],v[0])
-                else:
-                    shutil.copytree(v[1],v[0])
+                d2d_copy(v[1],v[0],oln_flag,mkd_flag)
             elif t=='f2f' and f2f_flag and not cpy_flag:
-                print('"%s"を削除'%(v[0]))
-                os.remove(v[0])
+                f2f_delete(v[1],v[0])
             elif t=='f2d' and f2d_flag and not cpy_flag:
-                v[1] = v[1].split('/')
-                v[1] = v[1][len(v[1])-1]
-                print('ファイル"%s"をディレクトリ"%s"から削除'%(v[1],v[0]))
-                if v[0][len(v[0])-1] != '/':
-                    v[0] = v[0] + '/'
-                os.remove(v[0]+v[1])
+                f2d_delete(v[1],v[0],red_flag)
             elif t=='d2d' and d2d_flag and not cpy_flag:
                 print('ディレクトリ"%s"の内容をディレクトリ"%s"から削除'%(v[1],v[0]))
-                if v[0][len(v[0])-1] != '/':
-                    v[0] = v[0] + '/'
-                fl = os.listdir(v[1])
-                for ft in fl:
-                    print('"%s"を削除'%(v[0]+ft))
-                    if os.path.isfile(v[0]+ft):
-                        os.remove(v[0]+ft)
-                    elif os.path.isdir(v[0]+ft):
-                        shutil.rmtree(v[0]+ft)
+                d2d_delete(v[1],v[0],red_flag)
 
     print('終了')
     f.close()
