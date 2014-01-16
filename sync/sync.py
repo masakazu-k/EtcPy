@@ -8,9 +8,11 @@
 # コメントアウトは#
 # フォルダ名やファイル名以外のスペースは禁止
 #
+
 import os
 import shutil
 import sys
+
 def f2f_copy(ff,tf,onlynew):
     if (onlynew == False) or (not os.path.exists(tf)):
         print('ファイル"%s"を"%s"にコピー'%(ff,tf))
@@ -30,6 +32,7 @@ def f2d_copy(ff,td,onlynew,mkdir):
             print('ディレクトリ"%s"を作成'%(td))
             os.mkdir(td)
         else:
+            print('ディレクトリ"%s"が存在しません'%(td))
             return
     tf = td + f
     f2f_copy(ff,tf,onlynew)
@@ -50,6 +53,12 @@ def d2d_copy(fd,td,onlynew,mkdir):
             #コピー元がディレクトリだった場合
             d2d_copy(ff,tf,onlynew,mkdir)
 
+def d_delete(td,rmdir):
+    if rmdir and (len(os.listdir(td))==0):
+        #空のディレクトリなら削除
+        print('ディレクトリ"%s"を削除'%(td))
+        os.rmdir(td)
+
 def f2f_delete(ff,tf):
     if os.path.exists(tf) and os.path.isfile(tf):
         print('ファイル"%s"を削除'%(tf))
@@ -67,16 +76,17 @@ def f2d_delete(ff,td,rmdir):
         return
     tf = td + f
     f2f_delete(ff,tf)
-    if rmdir and (len(os.listdir(td))==0):
-        #空のディレクトリなら削除
-        print('ディレクトリ"%s"を削除'%(td))
-        os.rmdir(td)
+    d_delete(td,rmdir)
+
 
 def d2d_delete(fd,td,rmdir):
     if td[len(td)-1] != '/':
         td = td + '/'
     if fd[len(fd)-1] != '/':
         fd = fd + '/'
+    if( not os.path.exists(td) ):
+        print('ディレクトリ"%s"が存在しません'%(td))
+        return
     fdl = os.listdir(fd)
     for ft in fdl:
         ff = fd + ft
@@ -87,6 +97,8 @@ def d2d_delete(fd,td,rmdir):
         elif os.path.isdir(ff):
             #コピー元がディレクトリだった場合
             d2d_delete(ff,tf,rmdir)
+            d_delete(td,rmdir)
+
 
 if __name__=='__main__':
     argvs = sys.argv
